@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Learning | Python</title>
+
+    <style>
+        * {
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif ;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        h1{
+            margin: auto;
+            text-align: center;
+            padding: 30px 0 20px;
+            font-size: 2.5em;
+        }
+
+        header p {
+            text-align: center;
+            margin: auto;
+        }
+
+        .orange {
+            color: rgb(255, 162, 0);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .chat {
+            margin: auto;
+            text-align: center;
+            transform: translateY(20px);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .query {
+            width: 80%;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 2px solid #d9d8d8;
+            border-bottom: 4px solid rgb(255, 162, 0);
+            font-size: 16px;
+            transition: all 0.3s ease;
+            min-height: 50px;
+        }
+
+        .query:focus {
+            outline: none;
+            border-color: rgb(255, 162, 0);
+            box-shadow: 0 0 10px rgba(255, 162, 0, 0.2);
+        }
+
+        .send_button {
+            margin-top: 15px;
+            padding: 12px 40px;
+            background: linear-gradient(135deg, rgb(255, 162, 0), #ff8c00);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send_button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 162, 0, 0.4);
+        }
+
+        .send_button:active {
+            transform: translateY(0);
+        }
+
+        .error-box {
+            transform: translateY(-10px);
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background: #fff3f3;
+            border-radius: 8px;
+            border-left: 4px solid #f44336;
+        }
+
+        .error-box p {
+            color: rgb(210, 47, 47);
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .progress-bar-container {
+            width: 200px;
+            height: 4px;
+            background-color: #e0e0e0;
+            border-radius: 2px;
+            margin: 8px auto 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #ff9800, #f44336);
+            border-radius: 2px;
+            transition: width 0.1s linear;
+        }
+
+        .messages {
+            margin-top: 40px;
+        }
+
+        .message-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid rgb(255, 162, 0);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+
+        .message-item:hover {
+            transform: translateX(5px);
+        }
+
+        .message-item p {
+            margin: 0 0 10px 0;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .message-item pre {
+            margin: 10px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        .base-data {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-left: 5px solid #4caf50;
+        }
+
+        .base-data p {
+            color: #2e7d32;
+        }
+
+        .similarity-item {
+            background: white;
+            border-left: 5px solid #ff9800;
+        }
+
+        .best-match {
+            background: linear-gradient(135deg, #e8f5e9, #a5d6a7);
+            border-left: 5px solid #4caf50;
+            border: 2px solid #4caf50;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .badge-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .badge-info {
+            background: #2196f3;
+            color: white;
+        }
+
+        .reset-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border-left: 5px solid #2196f3;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+        }
+
+        .stats-box {
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #9c27b0;
+        }
+
+        .stats-box h3 {
+            margin-top: 0;
+            color: #6a1b9a;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #6a1b9a;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+
+        .detail-item strong {
+            color: #555;
+        }
+
+        .explanation-box {
+            background: #f0f7ff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 3px solid #2196f3;
+        }
+
+        .common-patterns {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-left: 5px solid #4caf50;
+        }
+
+        .frequency-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .frequency-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .frequency-item:hover {
+            background: #f5f5f5;
+        }
+
+        .frequency-count {
+            font-weight: bold;
+            color: #4caf50;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #999;
+            padding: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .query {
+                width: 100%;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            h1 {
+                font-size: 1.8em;
+                padding: 20px 0 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .badge {
+                font-size: 10px;
+                padding: 3px 8px;
+            }
+
+            .message-item {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Machine Learning with <span class="orange">Python</span><br><br><span class="orange">
+            <a href="http://github.com/MACsepehri/flaskMachineLearningDecider" class="orange">Github</a></span></h1>
+        </header>
+
+        <div class="info-box">
+            {% if session.base_data is none %}
+                <p><strong>Step 1:</strong> Enter your base data</p>
+                <p style="font-size: 14px; color: #555; margin-top: 5px;">
+                    Can be a number, text, or Python list (e.g., [1, 2, 3, 4, 5, 6])
+                </p>
+            {% else %}
+                <p><strong>Base Data:</strong> 
+                    <code style="background: white; padding: 2px 10px; border-radius: 4px; font-size: 16px;">
+                        {{ session.base_data }}
+                    </code>
+                </p>
+                <p style="font-size: 14px; color: #555; margin-top: 5px;">
+                    Now enter Python lists to compare with base data
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="chat">
+            <form action="/send" method="post" class="form" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <input type="text" 
+                       placeholder="{% if session.base_data is none %}Enter base data...{% else %}Enter Python list...{% endif %}" 
+                       class="query" 
+                       name="query" 
+                       id="query"
+                       autocomplete="off">
+                
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button type="button" class="send_button" onclick="send_message();">Send</button>
+                </div>
+            </form>
+
+            <div class="error-box" id="errorBox">
+                <p id="errorText">Invalid input!</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <form action="/reset" method="POST" style="display: inline-block;">
+                <button type="submit" class="reset-btn">Reset All Data</button>
+            </form>
+        </div>
+
+        <div class="messages">
+            {% if session.base_data is not none %}
+                <div class="message-item base-data">
+                    <p><strong>Base Data</strong></p>
+                    <pre>{{ session.base_data }}</pre>
+                    <div style="font-size: 14px; color: #555; margin-top: 5px;">
+                        <span class="badge badge-info">Base Dataset</span>
+                        <span style="margin-left: 10px;">Length: 
+                            {% if session.base_data is iterable and session.base_data is not string %}
+                                {{ session.base_data|length }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if session.similarity_results and session.similarity_results.total_lists > 0 %}
+                <div class="stats-box">
+                    <h3>Similarity Analysis</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">{{ session.similarity_results.total_lists }}</div>
+                            <div class="stat-label">Total Lists</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #4caf50;">
+                                {{ session.similarity_results.lists_fully_matching|default(session.similarity_results.lists_with_base|default(0)) }}
+                            </div>
+                            <div class="stat-label">Fully Matching</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #ff9800;">
+                                {{ session.similarity_results.total_lists - (session.similarity_results.lists_fully_matching|default(0)) }}
+                            </div>
+                            <div class="stat-label">Not Fully Matching</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #9c27b0;">
+                                {{ session.similarity_results.avg_similarity }}%
+                            </div>
+                            <div class="stat-label">Average Similarity</div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; color: #555; margin-top: 10px;">
+                        {{ session.similarity_results.summary }}
+                    </p>
+                </div>
+
+                {% if session.similarity_results.best_match %}
+                    <div class="message-item best-match">
+                        <p>
+                            <strong>Best Match - List {{ session.similarity_results.best_match.list_index }}</strong>
+                            <span class="badge badge-success">Best</span>
+                        </p>
+                        <pre>{{ session.similarity_results.best_match.list }}</pre>
+                        <div style="margin-top: 10px;">
+                            <span class="badge badge-success">Similarity: {{ session.similarity_results.best_match.similarity_score }}%</span>
+                            <span class="badge badge-info">Length: {{ session.similarity_results.best_match.length }}</span>
+                            {% if session.similarity_results.best_match.is_subset %}
+                                <span class="badge badge-success">Subset</span>
+                            {% endif %}
+                        </div>
+                        <div class="explanation-box" style="margin-top: 10px;">
+                            {% if session.similarity_results.best_match.is_subset %}
+                                All elements in this list are present in the base data.
+                                <br>This is a <strong>perfect match</strong>!
+                            {% elif session.similarity_results.best_match.all_in_base %}
+                                All elements are in base data, but not all base elements are in this list.
+                                <br>This is a <strong>partial match</strong>.
+                            {% else %}
+                                Some elements in this list are NOT in the base data.
+                                <br>This is <strong>not a match</strong>.
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+                <h3 style="text-align: center; color: #ff9800; margin: 30px 0 20px;">All Lists Analysis</h3>
+                {% for item in session.similarity_results.similarities %}
+                    <div class="message-item similarity-item">
+                        <p>
+                            <strong>List {{ item.list_index }}</strong>
+                            <span class="badge 
+                                {% if item.similarity_score == 100 %}badge-success
+                                {% elif item.similarity_score > 50 %}badge-warning
+                                {% else %}badge-danger{% endif %}">
+                                {{ item.similarity_score }}% Similar
+                            </span>
+                            {% if item.is_subset %}
+                                <span class="badge badge-success">Subset</span>
+                            {% elif item.all_in_base %}
+                                <span class="badge badge-warning">Partial</span>
+                            {% else %}
+                                <span class="badge badge-danger">Not Match</span>
+                            {% endif %}
+                        </p>
+                        <pre>{{ item.list }}</pre>
+                        <div style="font-size: 14px; color: #555; margin-top: 10px;">
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <strong>Common elements:</strong> 
+                                    {% if item.common_elements %}
+                                        {{ item.common_elements }} ({{ item.common_count }})
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>All in base:</strong> 
+                                    {% if item.all_in_base %}Yes{% else %}No{% endif %}
+                                </div>
+                                {% if item.not_in_base %}
+                                    <div class="detail-item" style="grid-column: span 2; background: #fff3f3; border-left: 3px solid #f44336;">
+                                        <strong style="color: #f44336;">Elements NOT in base:</strong> 
+                                        {{ item.not_in_base }}
+                                    </div>
+                                {% endif %}
+                                {% if item.missing_from_base and item.missing_from_base|length > 0 %}
+                                    <div class="detail-item" style="grid-column: span 2; background: #fff8e1; border-left: 3px solid #ff9800;">
+                                        <strong style="color: #ff9800;">Missing from list:</strong> 
+                                        {{ item.missing_from_base }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="explanation-box">
+                                <strong>Explanation:</strong>
+                                {% if item.is_subset %}
+                                    All elements in this list are present in the base data.
+                                    <br><span style="color: #4caf50;">This is a perfect match!</span>
+                                {% elif item.all_in_base %}
+                                    All elements are in base data, but not all base elements are in this list.
+                                    <br><span style="color: #ff9800;">This is a partial match.</span>
+                                {% else %}
+                                    Some elements in this list are NOT in the base data.
+                                    <br><span style="color: #f44336;">This is not a match.</span>
+                                {% endif %}
+                            </div>
+                            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px; color: #999; font-size: 12px;">
+                                <span>Length: {{ item.length }}</span>
+                                {% if item.base_length %}
+                                    <span>Base Length: {{ item.base_length }}</span>
+                                {% endif %}
+                                {% if item.count_base_in_list is defined %}
+                                    <span>Count in list: {{ item.count_base_in_list }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% if session.common_patterns %}
+                    <div class="stats-box common-patterns" style="margin-top: 30px;">
+                        <h3 style="color: #2e7d32;">Common Patterns</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" style="color: #2e7d32;">{{ session.common_patterns.total_elements }}</div>
+                                <div class="stat-label">Total Elements</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" style="color: #2e7d32;">{{ session.common_patterns.unique_elements }}</div>
+                                <div class="stat-label">Unique Elements</div>
+                            </div>
+                            {% if session.common_patterns.common_elements %}
+                                <div class="stat-item" style="grid-column: span 2;">
+                                    <div style="font-weight: bold; color: #2e7d32; margin-bottom: 5px;">
+                                        Common in all lists:
+                                    </div>
+                                    <code style="background: #f5f5f5; padding: 5px 10px; border-radius: 4px;">
+                                        {{ session.common_patterns.common_elements }}
+                                    </code>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if session.common_patterns.frequency %}
+                            <details style="margin-top: 15px;">
+                                <summary style="cursor: pointer; color: #2e7d32; font-weight: bold; padding: 10px; background: white; border-radius: 6px;">
+                                    Element Frequency Analysis
+                                </summary>
+                                <div class="frequency-list">
+                                    {% for element, count in session.common_patterns.frequency.items()|sort(attribute='1', reverse=True) %}
+                                        <div class="frequency-item">
+                                            <span>
+                                                <code>{{ element }}</code>
+                                            </span>
+                                            <span class="frequency-count">{{ count }}x</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </details>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            {% if session.history %}
+                <h3 style="text-align: center; color: #666; margin: 30px 0 20px;">All Entered Lists</h3>
+                {% for query in session.history %}
+                    <div class="message-item">
+                        <p><strong>List {{ loop.index }}</strong></p>
+                        <pre>{{ query }}</pre>
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% if session.base_data is not none %}
+                    <div class="no-data">
+                        <p>No lists entered yet. Enter a Python list to analyze!</p>
+                        <p style="font-size: 14px; color: #999;">Example: [1, 2, 3] or ["a", "b", "c"]</p>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        var send_query = document.getElementById("query");
+        var errorBox = document.getElementById("errorBox");
+        var errorText = document.getElementById("errorText");
+        var progressBar = document.getElementById("progressBar");
+        var send_form = document.getElementsByClassName("form")[0];
+        var timerInterval = null;
+
+        function isValidPythonList(input) {
+            try {
+                input = input.trim();
+                if (!input.startsWith('[') || !input.endsWith(']')) {
+                    return false;
+                }
+                const result = new Function(`return (${input})`)();
+                return Array.isArray(result);
+            } catch (e) {
+                return false;
+            }
+        }
+
+        const send_message = () => {
+            const inputValue = send_query.value.trim();
+            
+            if (inputValue === "") {
+                errorText.textContent = "Empty entry! Please enter a value.";
+                errorBox.style.display = "block";
+                progressBar.style.width = "100%";
+                showErrorTimer();
+                return;
+            }
+            
+            const isBaseDataSet = "{{ 'true' if session.base_data is not none else 'false' }}";
+            
+            if (isBaseDataSet) {
+                if (!isValidPythonList(inputValue)) {
+                    errorText.textContent = "Invalid Python list! Please enter a valid list (e.g., [1, 2, 3])";
+                    errorBox.style.display = "block";
+                    progressBar.style.width = "100%";
+                    showErrorTimer();
+                    return;
+                }
+            }
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            errorBox.style.display = "none";
+            send_form.submit(); 
+        }
+
+        function showErrorTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            var duration = 5;
+            var startTime = Date.now();
+
+            timerInterval = setInterval(function() {
+                var elapsed = (Date.now() - startTime) / 1000;
+                var remaining = Math.max(0, duration - elapsed);
+                var percentage = (remaining / duration) * 100;
+                
+                progressBar.style.width = percentage + "%";
+
+                if (remaining <= 0) {
+                    clearInterval(timerInterval);
+                    errorBox.style.display = "none";
+                    timerInterval = null;
+                }
+            }, 100);
+        }
+
+        document.getElementById("query").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                send_message();
+            }
+        });
+
+        document.getElementById("query").focus();
+    </script>
+</body>
+</html>
